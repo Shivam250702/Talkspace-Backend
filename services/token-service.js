@@ -1,0 +1,19 @@
+const jwt=require('jwt');
+const accessTokenSecret=procees.env.JWT_ACCESS_TOKEN_SECRET;
+const refreshTokenSecret=procees.env.JWT_REFRESH_TOKEN_SECRET;
+class TokenService{
+generateTokens(payload)
+{
+    const accessToken=jwt.sign(payload,accessTokenSecret,{
+        expiresIn:'1h',
+    });
+const refreshToken=jwt.sign(payload,accessTokenSecret,{
+    expiresIn:'1y'
+});
+return {accessToken:accessToken,refreshToken:refreshToken};
+
+}
+
+
+}
+module.exports= new TokenService();
