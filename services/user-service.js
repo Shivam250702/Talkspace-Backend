@@ -1,4 +1,6 @@
-const UserModel=require('../models/UserModel');
+const UserModel = require('../models/user-models.js'); // or .ts, .json, etc.
+
+
 
 
 class UserService{
