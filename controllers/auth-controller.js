@@ -2,6 +2,7 @@ const OtpService = require('../services/Otp-service');
 const HashService = require('../services/hash-service');
 const userService=require('../services/user-service');
 const tokenService=require('../services/token-service');
+const UserDto=require('../dtos/user-dto');
 class AuthController {
     async sendOtp(req, res) {
         console.log('Request Body:', req.body);  
