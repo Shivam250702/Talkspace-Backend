@@ -1,11 +1,16 @@
 const mongoose = require('mongoose');
-const schema=mongoose.Schema;
+const Schema = mongoose.Schema;
 
-const UserSchema=new schema({
-phone:{type:String,required:true},
-activated:{type:Boolean,required:false,default:false},
-},{
-    timestamp:true
-});
+const userSchema = new Schema(
+    {
+        phone: { type: String, required: true },
+        name: { type: String, required: false },
+        avatar: { type: String, required: false },
+        activated: { type: Boolean, required: false, default: false },
+    },
+    {
+        timestamps: true,
+    }
+);
 
-module.exports=mongoose.model('User',UserSchema,'users');
+module.exports = mongoose.model('User', userSchema, 'users');
