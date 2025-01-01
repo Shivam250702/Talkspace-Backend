@@ -1,22 +1,22 @@
-const OtpService = require('../services/Otp-service');
-const HashService = require('../services/hash-service');
-const userService=require('../services/user-service');
-const tokenService=require('../services/token-service');
-const UserDto=require('../dtos/user-dto');
+const otpService = require('../services/Otp-service');
+const hashService = require('../services/hash-service');
+const userService = require('../services/user-service');
+const tokenService = require('../services/token-service');
+const UserDto = require('../dtos/user-dto');
+
 class AuthController {
     async sendOtp(req, res) {
-        console.log('Request Body:', req.body);  
         const { phone } = req.body;
         if (!phone) {
             res.status(400).json({ message: 'Phone field is required!' });
         }
 
-        const otp = await OtpService.generateOtp();
+        const otp = await otpService.generateOtp();
 
         const ttl = 1000 * 60 * 2; // 2 min
         const expires = Date.now() + ttl;
         const data = `${phone}.${otp}.${expires}`;
-        const hash = HashService.hashOtp(data);
+        const hash = hashService.hashOtp(data);
 
         // send OTP
         try {
@@ -64,17 +64,21 @@ class AuthController {
             _id: user._id,
             activated: false,
         });
-  await  tokenService.storerefreshToken(refreshToken, user._id);
+
+        await tokenService.storeRefreshToken(refreshToken, user._id);
+
         res.cookie('refreshToken', refreshToken, {
             maxAge: 1000 * 60 * 60 * 24 * 30,
             httpOnly: true,
         });
+
         res.cookie('accessToken', accessToken, {
             maxAge: 1000 * 60 * 60 * 24 * 30,
             httpOnly: true,
         });
+
         const userDto = new UserDto(user);
-        res.json({user: userDto,auth:true });
+        res.json({ user: userDto, auth: true });
     }
 }
 
