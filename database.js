@@ -2,7 +2,7 @@ require('dotenv').config(); // Load environment variables
 const mongoose = require('mongoose');
 
 function DbConnect() {
-    const DB_URL = process.env.DB_URL;
+    const DB_URL = 'mongodb+srv://shivamdotsingh:1QmSuP13qzu9GSO9@cluster0.0xjhv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
     if (!DB_URL) {
         console.error('Error: DB_URL is not defined.');
