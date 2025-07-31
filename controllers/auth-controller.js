@@ -1,8 +1,10 @@
-const otpService = require('../services/Otp-service');
+const otpService = require('../services/otp-service');
 const hashService = require('../services/hash-service');
 const userService = require('../services/user-service');
 const tokenService = require('../services/token-service');
 const UserDto = require('../dtos/user-dto');
+
+
 
 class AuthController {
     async sendOtp(req, res) {
@@ -12,9 +14,8 @@ class AuthController {
         }
 
         const otp = await otpService.generateOtp();
-        // const otp = 7777;
-
-        const ttl = 1000 * 60 * 2; // 2 min
+        const console_otp = otp+1;
+        const ttl = 1000 * 60 * 2; // 2 min expiry time of OTP
         const expires = Date.now() + ttl;
         const data = `${phone}.${otp}.${expires}`;
         const hash = hashService.hashOtp(data);
@@ -25,13 +26,17 @@ class AuthController {
             res.json({
                 hash: `${hash}.${expires}`,
                 phone,
-                otp
+                console_otp,
             });
         } catch (err) {
-            console.log(err);
-            res.status(500).json({ message: 'message sending failed' });
+            // console.log(err);
+            res.status(500).json({ message: 'OTP sending failed' });
         }
     }
+
+
+    
+
 
     async verifyOtp(req, res) {
         const { otp, hash, phone } = req.body;
@@ -57,7 +62,7 @@ class AuthController {
                 user = await userService.createUser({ phone });
             }
         } catch (err) {
-            console.log(err);
+            // console.log(err);
             res.status(500).json({ message: 'Db error' });
         }
 
@@ -65,6 +70,7 @@ class AuthController {
             _id: user._id,
             activated: false,
         });
+
 
         await tokenService.storeRefreshToken(refreshToken, user._id);
 
@@ -79,10 +85,15 @@ class AuthController {
         });
 
         const userDto = new UserDto(user);
-        res.json({ user: userDto, auth: true });
+        res.json({ accessToken, 
+            user: userDto ,
+            auth: true
+        });
     }
 
+
     async refresh(req, res) {
+        // console.log("inside refresh func");
         // get refresh token from cookie
         const { refreshToken: refreshTokenFromCookie } = req.cookies;
         // check if token is valid
@@ -142,10 +153,13 @@ class AuthController {
         // delete refresh token from db
         await tokenService.removeToken(refreshToken);
         // delete cookies
+        // console.log('clearning cookeis..');
         res.clearCookie('refreshToken');
         res.clearCookie('accessToken');
+        // console.log('cleared cookeis..');
         res.json({ user: null, auth: false });
     }
+    
 }
 
 module.exports = new AuthController();
